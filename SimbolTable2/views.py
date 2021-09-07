@@ -5,6 +5,20 @@ from symbols.models import Symbol
 from symbols import forms
 
 
+def search(request):
+    search_results = []
+    symbols = Symbol.objects.all()
+    if request.method == 'GET':  # If the form is submitted
+        keyword = request.GET.get('search_box', None)
+        for i in symbols:
+            if i.name == str(keyword):
+                search_results.append(i)
+
+    return render(request, 'search_result.html', {
+        "search_results": search_results
+    })
+
+
 def home(request):
     form = forms.AddSymbolForm()
     """views the home page"""
@@ -15,18 +29,13 @@ def home(request):
     })
 
 
-types = ['int', 'id', 'num', 'function']
+types = ['INT', 'ID', 'NUM', 'FUNCTION']
 
 
 def get_index(name):
     # also deletes the one to be replaced
     index = ''.join(str(ord(c)) for c in str(name))  # concat the asci values
     index = int(index) % 11  # makes index up to 10
-    symbols = Symbol.objects.all()
-    # deletes symbol with same index already in database
-    for i in symbols:
-        if i.index == index:
-            i.delete()
     return index
 
 
